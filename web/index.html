@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleoperasi Robot ROS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+
+    <h1 class="text-3xl font-bold mb-2">Panel Kendali Turtlebot3</h1>
+    <p id="status" class="text-red-500 font-semibold mb-6">Status: Terputus</p>
+
+    <div class="bg-black p-2 rounded-lg shadow-lg mb-8">
+        <img id="kamera" src="http://localhost:8080/stream?topic=/camera/rgb/image_raw" 
+             alt="Kamera Robot" class="w-[640px] h-[480px] object-cover rounded">
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 w-64 text-center">
+        <div></div>
+        <button onmousedown="maju()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Maju</button>
+        <div></div>
+        
+        <button onmousedown="kiri()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kiri</button>
+        <button onmousedown="stop()" class="bg-red-500 text-white py-4 rounded-lg shadow hover:bg-red-600 active:bg-red-800 font-bold">STOP</button>
+        <button onmousedown="kanan()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kanan</button>
+        
+        <div></div>
+        <button onmousedown="mundur()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Mundur</button>
+        <div></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
