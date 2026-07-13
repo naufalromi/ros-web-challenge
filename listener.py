@@ -23,38 +23,46 @@ def exec_in_container(cmd):
 def wait_port_free(port, timeout=15):
     for i in range(timeout):
         _, out, _ = exec_in_container(
-            f'ss -tlnp 2>/dev/null | grep -q ":{port} " && echo inuse || echo free'
+            f'ss -tanp 2>/dev/null | grep -q ":{port} " && echo inuse || echo free'
         )
         if 'free' in out:
             return True
         time.sleep(1)
     return False
 
-def start_rosbridge():
+def start_rosbridge(max_retries=5):
     print('  Waiting port 9090 free...')
     wait_port_free(9090)
-    exec_in_container(
-        f'nohup bash -c "{ROS_SETUP} && roslaunch rosbridge_server rosbridge_websocket.launch" > /tmp/rosbridge.log 2>&1 & echo $!'
-    )
-    time.sleep(2)
-    _, out, _ = exec_in_container('pgrep -f "rosbridge" > /dev/null 2>&1 && echo alive || echo dead')
-    if 'alive' in out:
-        print('  rosbridge started OK')
-        return True
+    for attempt in range(1, max_retries + 1):
+        exec_in_container(
+            f'nohup bash -c "{ROS_SETUP} && roslaunch rosbridge_server rosbridge_websocket.launch" > /tmp/rosbridge.log 2>&1 & echo $!'
+        )
+        time.sleep(2)
+        _, out, _ = exec_in_container('pgrep -f "rosbridge" > /dev/null 2>&1 && echo alive || echo dead')
+        if 'alive' in out:
+            print('  rosbridge started OK')
+            return True
+        _, _, stderr = exec_in_container('tail -3 /tmp/rosbridge.log')
+        print(f'  rosbridge attempt {attempt}/{max_retries} failed: {stderr.strip()}')
+        time.sleep(3)
     print('  rosbridge FAILED to start')
     return False
 
-def start_web_video():
+def start_web_video(max_retries=5):
     print('  Waiting port 8080 free...')
     wait_port_free(8080)
-    exec_in_container(
-        f'nohup bash -c "{ROS_SETUP} && rosrun web_video_server web_video_server" > /tmp/video.log 2>&1 & echo $!'
-    )
-    time.sleep(2)
-    _, out, _ = exec_in_container('pgrep -f "web_video_server" > /dev/null 2>&1 && echo alive || echo dead')
-    if 'alive' in out:
-        print('  web_video_server started OK')
-        return True
+    for attempt in range(1, max_retries + 1):
+        exec_in_container(
+            f'nohup bash -c "{ROS_SETUP} && rosrun web_video_server web_video_server" > /tmp/video.log 2>&1 & echo $!'
+        )
+        time.sleep(2)
+        _, out, _ = exec_in_container('pgrep -f "web_video_server" > /dev/null 2>&1 && echo alive || echo dead')
+        if 'alive' in out:
+            print('  web_video_server started OK')
+            return True
+        _, _, stderr = exec_in_container('tail -3 /tmp/video.log')
+        print(f'  web_video_server attempt {attempt}/{max_retries} failed: {stderr.strip()}')
+        time.sleep(3)
     print('  web_video_server FAILED to start')
     return False
 

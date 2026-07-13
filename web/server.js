@@ -155,10 +155,34 @@ app.get('/api/robot/status', (req, res) => {
     });
 });
 
+function startListener() {
+    const cp = require('child_process');
+    const proc = cp.spawn('python3', [path.join(__dirname, '..', 'listener.py')], {
+        cwd: path.join(__dirname, '..'),
+        stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    proc.stdout.on('data', (d) => {
+        d.toString().split('\n').filter(Boolean).forEach(l => console.log('[listener]', l));
+    });
+
+    proc.stderr.on('data', (d) => {
+        d.toString().split('\n').filter(Boolean).forEach(l => console.error('[listener]', l));
+    });
+
+    proc.on('exit', (code) => {
+        console.log(`[listener] exited with code ${code}, restart in 2s...`);
+        setTimeout(startListener, 2000);
+    });
+
+    proc.on('error', (err) => {
+        console.error('[listener] failed to spawn:', err.message);
+    });
+
+    return proc;
+}
+
 app.listen(3000, () => {
     console.log('Server Backend berjalan di http://localhost:3000');
-});     
-
-// app.listen(80, '0.0.0.0', () => {
-//     console.log('Server Backend berjalan di Port 80 (Akses via Public IP Azure)');
-// });
+    startListener();
+});
