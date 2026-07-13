@@ -37,6 +37,17 @@ app.post('/api/log', (req, res) => {
     });
 });
 
+setInterval(() => {
+    const cleanupQuery = "DELETE FROM system_logs WHERE created_at < (NOW() - INTERVAL 1 DAY)";
+    db.query(cleanupQuery, (err, result) => {
+        if (err) {
+            console.error('Gagal menghapus log lama:', err);
+        } else if (result.affectedRows > 0) {
+            console.log(`Auto-cleanup: ${result.affectedRows} log lama (lebih dari 24 jam) berhasil dihapus.`);
+        }
+    });
+}, 3600000);
+
 app.listen(3000, () => {
     console.log('Server Backend berjalan di http://localhost:3000');
 });
