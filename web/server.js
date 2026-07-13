@@ -48,6 +48,10 @@ setInterval(() => {
     });
 }, 3600000);
 
-app.listen(3000, () => {
-    console.log('Server Backend berjalan di http://localhost:3000');
+// app.listen(3000, () => {
+//     console.log('Server Backend berjalan di http://localhost:3000');
+// });       
+
+app.listen(80, '0.0.0.0', () => {
+    console.log('Server Backend berjalan di Port 80 (Akses via Public IP Azure)');
 });
