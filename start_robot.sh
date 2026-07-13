@@ -1,0 +1,30 @@
+#!/bin/bash
+
+export TURTLEBOT3_MODEL=waffle
+source /opt/ros/noetic/setup.bash
+
+echo "[+] Starting Gazebo..."
+xvfb-run -a roslaunch turtlebot3_gazebo turtlebot3_world.launch gui:=false > /tmp/gazebo.log 2>&1 &
+
+echo "[+] Waiting for Gazebo to be ready..."
+for i in $(seq 1 30); do
+    if rostopic list 2>/dev/null | grep -q /clock; then
+        echo "[+] Gazebo ready after ${i}s"
+        break
+    fi
+    if [ "$i" -eq 30 ]; then
+        echo "[-] Gazebo did not start in time"
+    fi
+    sleep 1
+done
+
+echo "[+] Starting rosbridge..."
+roslaunch rosbridge_server rosbridge_websocket.launch > /tmp/rosbridge.log 2>&1 &
+
+sleep 3
+
+echo "[+] Starting web_video_server..."
+rosrun web_video_server web_video_server > /tmp/video.log 2>&1 &
+
+echo "[+] All services started."
+exec tail -f /tmp/gazebo.log /tmp/rosbridge.log /tmp/video.log
