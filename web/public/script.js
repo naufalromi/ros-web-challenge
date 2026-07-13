@@ -1,5 +1,13 @@
+const PORT_ROSBRIDGE = 'wss://delayed-uncertainty-hawaii-discrete.trycloudflare.com';
+const PORT_CAMERA = 'https://grew-favorites-cooking-solutions.trycloudflare.com'; 
+
+const imgElement = document.getElementById('kamera');
+
+imgElement.src =
+`${PORT_CAMERA}/stream?topic=/camera/rgb/image_raw&quality=10`;
+
 const ros = new ROSLIB.Ros({
-    url : 'ws://localhost:9090'
+    url: PORT_ROSBRIDGE
 });
 
 ros.on('connection', function() {
