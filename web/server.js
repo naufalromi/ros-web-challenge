@@ -9,6 +9,13 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/api/config', (req, res) => {
+    res.json({
+        rosbridgeUrl: process.env.ROSBRIDGE_URL || '',
+        cameraUrl: process.env.CAMERA_URL || ''
+    });
+});
+
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -48,10 +55,10 @@ setInterval(() => {
     });
 }, 3600000);
 
-// app.listen(3000, () => {
-//     console.log('Server Backend berjalan di http://localhost:3000');
-// });       
+app.listen(3000, () => {
+    console.log('Server Backend berjalan di http://localhost:3000');
+});       
 
-app.listen(80, '0.0.0.0', () => {
-    console.log('Server Backend berjalan di Port 80 (Akses via Public IP Azure)');
-});
+// app.listen(80, '0.0.0.0', () => {
+//     console.log('Server Backend berjalan di Port 80 (Akses via Public IP Azure)');
+// });

@@ -12,22 +12,34 @@
     <h1 class="text-3xl font-bold mb-2">Panel Kendali Turtlebot3</h1>
     <p id="status" class="text-red-500 font-semibold mb-6">Status: Terputus</p>
 
+    <div class="bg-white p-4 rounded-lg shadow-lg mb-6 w-[640px] space-y-2">
+        <label class="block text-sm font-medium text-gray-700">ROS Bridge URL (ws://...)</label>
+        <input id="rosUrlInput" type="text" placeholder="wss://example.trycloudflare.com"
+               class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+        <label class="block text-sm font-medium text-gray-700">Camera URL (http://...)</label>
+        <input id="camUrlInput" type="text" placeholder="https://example.trycloudflare.com"
+               class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+        <button id="connectBtn" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 font-semibold">
+            Connect
+        </button>
+    </div>
+
     <div class="bg-black p-2 rounded-lg shadow-lg mb-8">
-        <img id="kamera" src="" 
+        <img id="kamera" src=""
              alt="Kamera Robot" class="w-[640px] h-[480px] object-cover rounded">
     </div>
 
     <div class="grid grid-cols-3 gap-4 w-64 text-center">
         <div></div>
-        <button onmousedown="maju()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Maju</button>
+        <button id="btnMaju" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Maju</button>
         <div></div>
-        
-        <button onmousedown="kiri()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kiri</button>
-        <button onmousedown="stop()" class="bg-red-500 text-white py-4 rounded-lg shadow hover:bg-red-600 active:bg-red-800 font-bold">STOP</button>
-        <button onmousedown="kanan()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kanan</button>
-        
+
+        <button id="btnKiri" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kiri</button>
+        <button id="btnStop" class="bg-red-500 text-white py-4 rounded-lg shadow hover:bg-red-600 active:bg-red-800 font-bold">STOP</button>
+        <button id="btnKanan" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Kanan</button>
+
         <div></div>
-        <button onmousedown="mundur()" onmouseup="stop()" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Mundur</button>
+        <button id="btnMundur" class="bg-blue-500 text-white py-4 rounded-lg shadow hover:bg-blue-600 active:bg-blue-800">Mundur</button>
         <div></div>
     </div>
 
