@@ -5,6 +5,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
 
 const app = express();
 
@@ -35,11 +36,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const tunnelConfig = { rosbridgeUrl: '', cameraUrl: '', webUrl: '' };
 
+function getTunnelUrl() {
+    if (tunnelConfig.webUrl) return tunnelConfig.webUrl;
+    try {
+        const log = fs.readFileSync(path.join(__dirname, '..', 'tunnel_web.log'), 'utf8');
+        const m = log.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
+        if (m) {
+            tunnelConfig.webUrl = m[0];
+            return m[0];
+        }
+    } catch (_) {}
+    return '';
+}
+
 app.get('/api/config', (req, res) => {
     res.json({
         rosbridgeUrl: tunnelConfig.rosbridgeUrl || process.env.ROSBRIDGE_URL || '',
         cameraUrl: tunnelConfig.cameraUrl || process.env.CAMERA_URL || '',
-        webUrl: tunnelConfig.webUrl || ''
+        webUrl: getTunnelUrl()
     });
 });
 
