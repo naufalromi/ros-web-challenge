@@ -12,9 +12,6 @@ let rosGeneration = 0;
 const statusEl = document.getElementById('status');
 const imgEl = document.getElementById('kamera');
 const camStatusEl = document.getElementById('camStatus');
-const rosInput = document.getElementById('rosUrlInput');
-const camInput = document.getElementById('camUrlInput');
-const connectBtn = document.getElementById('connectBtn');
 const robotStatusEl = document.getElementById('robotStatus');
 const toggleRobotBtn = document.getElementById('toggleRobotBtn');
 const toggleLogBtn = document.getElementById('toggleLogBtn');
@@ -177,14 +174,6 @@ function setCameraUrl(url) {
     };
 }
 
-function saveUrls() {
-    const ru = rosInput.value.trim();
-    const cu = camInput.value.trim();
-    if (ru) localStorage.setItem('rosbridgeUrl', ru);
-    if (cu) localStorage.setItem('cameraUrl', cu);
-    return { ru, cu };
-}
-
 function restoreLogPanel() {
     const open = localStorage.getItem('logPanelOpen') === 'true';
     if (open) {
@@ -213,9 +202,6 @@ async function init() {
     const savedCameraUrl = localStorage.getItem('cameraUrl') || '';
     const savedRobotOn = localStorage.getItem('robotOn') === 'true';
 
-    rosInput.value = savedRosbridgeUrl;
-    camInput.value = savedCameraUrl;
-
     if (savedRobotOn) {
         updateRobotStatus(true);
     }
@@ -231,20 +217,14 @@ async function init() {
         const cfg = await res.json();
         const finalRosUrl = cfg.rosbridgeUrl || savedRosbridgeUrl;
         const finalCamUrl = cfg.cameraUrl || savedCameraUrl;
-        rosInput.value = finalRosUrl;
-        camInput.value = finalCamUrl;
+        if (cfg.rosbridgeUrl) localStorage.setItem('rosbridgeUrl', cfg.rosbridgeUrl);
+        if (cfg.cameraUrl) localStorage.setItem('cameraUrl', cfg.cameraUrl);
         if (!savedRosbridgeUrl && finalRosUrl) {
             updateStatus('connecting', 'Status: Menghubungkan...');
             setCameraUrl(finalCamUrl);
             connectToRos(finalRosUrl);
         }
     } catch (_) {}
-
-    connectBtn.addEventListener('click', () => {
-        const { ru, cu } = saveUrls();
-        setCameraUrl(cu);
-        connectToRos(ru);
-    });
 
     toggleRobotBtn.addEventListener('click', toggleRobot);
     pollRobotStatus();

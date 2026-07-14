@@ -33,11 +33,21 @@ app.use('/api/log', logLimiter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+const tunnelConfig = { rosbridgeUrl: '', cameraUrl: '' };
+
 app.get('/api/config', (req, res) => {
     res.json({
-        rosbridgeUrl: process.env.ROSBRIDGE_URL || '',
-        cameraUrl: process.env.CAMERA_URL || ''
+        rosbridgeUrl: tunnelConfig.rosbridgeUrl || process.env.ROSBRIDGE_URL || '',
+        cameraUrl: tunnelConfig.cameraUrl || process.env.CAMERA_URL || ''
     });
+});
+
+app.post('/api/config/tunnels', (req, res) => {
+    const { rosbridgeUrl, cameraUrl } = req.body;
+    if (rosbridgeUrl) tunnelConfig.rosbridgeUrl = rosbridgeUrl;
+    if (cameraUrl) tunnelConfig.cameraUrl = cameraUrl;
+    console.log('Tunnel URLs updated');
+    res.json({ ok: true });
 });
 
 if (!process.env.DB_USER || !process.env.DB_PASSWORD) {
@@ -155,6 +165,7 @@ app.get('/api/robot/status', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Server Backend berjalan di http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server Backend berjalan di http://0.0.0.0:${PORT}`);
 });
