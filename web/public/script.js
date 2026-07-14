@@ -217,6 +217,12 @@ async function init() {
     try {
         const res = await fetch('/api/config');
         const cfg = await res.json();
+
+        if (cfg.webUrl && window.location.href.startsWith('http://')) {
+            window.location.href = cfg.webUrl;
+            return;
+        }
+
         const finalRosUrl = cfg.rosbridgeUrl || savedRosbridgeUrl;
         const finalCamUrl = cfg.cameraUrl || savedCameraUrl;
         if (cfg.rosbridgeUrl) localStorage.setItem('rosbridgeUrl', cfg.rosbridgeUrl);

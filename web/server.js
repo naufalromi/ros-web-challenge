@@ -33,19 +33,21 @@ app.use('/api/log', logLimiter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const tunnelConfig = { rosbridgeUrl: '', cameraUrl: '' };
+const tunnelConfig = { rosbridgeUrl: '', cameraUrl: '', webUrl: '' };
 
 app.get('/api/config', (req, res) => {
     res.json({
         rosbridgeUrl: tunnelConfig.rosbridgeUrl || process.env.ROSBRIDGE_URL || '',
-        cameraUrl: tunnelConfig.cameraUrl || process.env.CAMERA_URL || ''
+        cameraUrl: tunnelConfig.cameraUrl || process.env.CAMERA_URL || '',
+        webUrl: tunnelConfig.webUrl || ''
     });
 });
 
 app.post('/api/config/tunnels', (req, res) => {
-    const { rosbridgeUrl, cameraUrl } = req.body;
+    const { rosbridgeUrl, cameraUrl, webUrl } = req.body;
     if (rosbridgeUrl) tunnelConfig.rosbridgeUrl = rosbridgeUrl;
     if (cameraUrl) tunnelConfig.cameraUrl = cameraUrl;
+    if (webUrl) tunnelConfig.webUrl = webUrl;
     console.log('Tunnel URLs updated');
     res.json({ ok: true });
 });

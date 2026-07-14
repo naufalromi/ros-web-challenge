@@ -135,13 +135,18 @@ def extract_url(log_file):
 def send_tunnel_urls():
     ws_url = extract_url('tunnel_ws.log')
     cam_url = extract_url('tunnel_cam.log')
-    if ws_url or cam_url:
+    web_url = extract_url('tunnel_web.log')
+    if ws_url or cam_url or web_url:
         try:
             r = requests.post(f'{BACKEND_URL}/api/config/tunnels',
-                            json={'rosbridgeUrl': ws_url, 'cameraUrl': cam_url},
+                            json={
+                                'rosbridgeUrl': ws_url,
+                                'cameraUrl': cam_url,
+                                'webUrl': web_url
+                            },
                             timeout=10)
             if r.status_code == 200:
-                print(f'Tunnel URLs sent: ws={ws_url}, cam={cam_url}')
+                print(f'Tunnel URLs sent: ws={ws_url}, cam={cam_url}, web={web_url}')
         except Exception as e:
             print(f'Failed to send tunnel URLs: {e}')
 
