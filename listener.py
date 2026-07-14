@@ -74,14 +74,27 @@ def is_gazebo_running():
     return success and 'running' in stdout
 
 def kill_all_ros():
-    exec_in_container('pkill -9 -f "roslaunch" 2>/dev/null; pkill -9 -f "gzserver" 2>/dev/null; pkill -9 -f "gzclient" 2>/dev/null; pkill -9 -f "web_video_server" 2>/dev/null; pkill -9 -f "rosbridge" 2>/dev/null; fuser -k 8080/tcp 2>/dev/null; fuser -k 9090/tcp 2>/dev/null')
-    wait_port_free(8080, timeout=10)
-    wait_port_free(9090, timeout=10)
+    patterns = ['roslaunch', 'gzserver', 'gzclient', 'web_video_server', 'rosbridge']
+    for p in patterns:
+        exec_in_container(f'for pid in $(pgrep -f "{p}" 2>/dev/null); do kill -9 $pid 2>/dev/null; done')
+    exec_in_container('fuser -k 8080/tcp 2>/dev/null; fuser -k 9090/tcp 2>/dev/null')
+    wait_port_free(8080, timeout=5)
+    wait_port_free(9090, timeout=5)
+    print('  Old processes cleaned')
 
 def start_gazebo():
     if is_gazebo_running():
         print('Gazebo already running, skipping')
         return True
+
+    r = subprocess.run(['docker', 'inspect', '-f', '{{.State.Status}}', CONTAINER_NAME],
+                      capture_output=True, text=True)
+    if 'running' not in r.stdout:
+        print('Container not running, starting it...')
+        subprocess.run(['docker', 'start', CONTAINER_NAME], timeout=30, capture_output=True)
+        time.sleep(5)
+    else:
+        print('Container already running')
 
     kill_all_ros()
 
@@ -103,8 +116,10 @@ def start_gazebo():
     return False
 
 def stop_gazebo():
-    kill_all_ros()
-    print('All ROS processes stopped')
+    print('Stopping container...')
+    subprocess.run(['docker', 'stop', 'ros_turtlebot3_container'], timeout=30, capture_output=True)
+    time.sleep(2)
+    print('Container stopped')
     return True
 
 def extract_url(log_file):

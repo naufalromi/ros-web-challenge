@@ -43,6 +43,7 @@ function sendLog(action_type, detail) {
 
 function publishTwist(linear, angular) {
     if (!ros || !ros.isConnected) return;
+    if (!robotOn) return;
     const twist = new ROSLIB.Message({
         linear:  { x: linear,  y: 0.0, z: 0.0 },
         angular: { x: 0.0, y: 0.0, z: angular }
@@ -51,6 +52,7 @@ function publishTwist(linear, angular) {
 }
 
 function startMove(linear, angular) {
+    if (!robotOn) return;
     stopMove();
     publishTwist(linear, angular);
     sendLog('velocity', { linear, angular });
