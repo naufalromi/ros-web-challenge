@@ -65,7 +65,6 @@ function stopMove() {
         publishTimer = null;
     }
     publishTwist(0, 0);
-    sendLog('velocity', { linear: 0, angular: 0 });
 }
 
 function bindButton(id, linear, angular) {
