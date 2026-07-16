@@ -333,6 +333,10 @@ function clearPoll() {
     }
 }
 
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function appendLogEntry(log) {
     const tr = document.createElement('tr');
     tr.className = 'border-b border-gray-200 hover:bg-gray-50';
@@ -343,10 +347,12 @@ function appendLogEntry(log) {
         try { detailStr = JSON.stringify(JSON.parse(log.detail)); } catch { detailStr = log.detail; }
     }
 
+    const typeDisplay = escapeHtml(log.action_type);
+    const detailDisplay = escapeHtml(detailStr);
     tr.innerHTML = `
         <td class="px-3 py-1.5 whitespace-nowrap text-gray-500">${time}</td>
-        <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded text-xs font-medium ${logClass(log.action_type)}">${log.action_type}</span></td>
-        <td class="px-3 py-1.5 text-gray-600 truncate max-w-xs">${detailStr}</td>
+        <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded text-xs font-medium ${logClass(log.action_type)}">${typeDisplay}</span></td>
+        <td class="px-3 py-1.5 text-gray-600 truncate max-w-xs">${detailDisplay}</td>
     `;
     logBody.prepend(tr);
 }

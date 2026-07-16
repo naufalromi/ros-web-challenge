@@ -58,8 +58,19 @@ app.get('/api/config', (req, res) => {
     });
 });
 
+const TUNNEL_URL_PATTERN = /^https?:\/\/[a-zA-Z0-9.-]+\.trycloudflare\.com$/;
+
 app.post('/api/config/tunnels', (req, res) => {
     const { rosbridgeUrl, cameraUrl, webUrl } = req.body;
+    if (rosbridgeUrl && !TUNNEL_URL_PATTERN.test(rosbridgeUrl)) {
+        return res.status(400).json({ error: 'Invalid rosbridge URL' });
+    }
+    if (cameraUrl && !TUNNEL_URL_PATTERN.test(cameraUrl)) {
+        return res.status(400).json({ error: 'Invalid camera URL' });
+    }
+    if (webUrl && !TUNNEL_URL_PATTERN.test(webUrl)) {
+        return res.status(400).json({ error: 'Invalid web URL' });
+    }
     if (rosbridgeUrl) tunnelConfig.rosbridgeUrl = rosbridgeUrl;
     if (cameraUrl) tunnelConfig.cameraUrl = cameraUrl;
     if (webUrl) tunnelConfig.webUrl = webUrl;
@@ -87,10 +98,12 @@ db.connect(err => {
     console.log('Sukses terhubung ke database MySQL.');
 });
 
+const VALID_LOG_TYPES = ['velocity', 'connect', 'disconnect', 'robot_on', 'robot_off', 'error'];
+
 app.post('/api/log', (req, res) => {
     const { action_type, detail } = req.body;
-    if (!action_type) {
-        return res.status(400).json({ error: 'action_type is required' });
+    if (!action_type || !VALID_LOG_TYPES.includes(action_type)) {
+        return res.status(400).json({ error: 'Invalid or missing action_type' });
     }
     const query = 'INSERT INTO system_logs (action_type, detail) VALUES (?, ?)';
     db.query(query, [action_type, typeof detail === 'object' ? JSON.stringify(detail) : detail || ''], (err, result) => {
