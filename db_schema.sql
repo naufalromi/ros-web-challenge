@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS robot_db;
 USE robot_db;
 
--- Buat user terbatas (ganti password sesuai .env)
 -- CREATE USER IF NOT EXISTS 'robot_app'@'localhost' IDENTIFIED BY 'GantiIniP@sswordKuat123';
 -- GRANT SELECT, INSERT, DELETE ON robot_db.* TO 'robot_app'@'localhost';
 -- FLUSH PRIVILEGES;
